@@ -1,0 +1,3 @@
+rootProject.name='Lib Sync Task'
+include ':app'
+include ':libsynctask'
