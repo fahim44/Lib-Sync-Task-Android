@@ -6,6 +6,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        SyncTaskLib.initiate(getApplicationContext(), getApplicationContext().getPackageName());
+        SyncTaskLib.getInstance().initiate(getApplicationContext(), getApplicationContext().getPackageName());
     }
 }

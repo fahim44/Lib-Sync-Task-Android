@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onTaskAddedToSyncQueue() {
                         Log.d("AddTask", "task added to sync queue");
-                        AddTask.readTask();
+                        //AddTask.readTask();
                     }
 
                     @Override

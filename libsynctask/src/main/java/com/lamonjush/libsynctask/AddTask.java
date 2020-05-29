@@ -1,5 +1,9 @@
 package com.lamonjush.libsynctask;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.lamonjush.libsynctask.callback.TaskEntryListener;
@@ -14,19 +18,49 @@ public class AddTask {
 
     private ExecutorService service = Executors.newSingleThreadExecutor();
 
+
     public AddTask(@NonNull Task task, TaskEntryListener listener) {
+        //check lib init and task validation
         if (checkInitState(listener)
                 && isTaskValid(task, listener)) {
-            service.submit(() -> {
+
+            //if network not connected, save the task in the db & update the listener
+            if (!SyncTaskLib.getInstance().isNetworkConnected()) {
+                service.submit(() -> {
+                    addTaskToLocalDB(task, listener);
+                });
+            }
+            //else check internet availability
+            else {
+                service.submit(() -> {
+                    //if internet not connected,save the task in the db & update the listener
+                    if(!SyncTaskLib.getInstance().isInternetAvailable()){
+                        addTaskToLocalDB(task, listener);
+                    }
+                    //else try to call the server
+                });
+            }
+
+
+            /*service.submit(() -> {
+                Log.d(TAG, "isInternetAvailable : " + SyncTaskLib.getInstance().isInternetAvailable());
                 if (listener != null) {
                     listener.onTaskDone("", taskCompleted -> {
                         if (taskCompleted) {
-                            /*saveTaskInDB(task);
-                            listener.onTaskAddedToSyncQueue();*/
+                            *//*
+                            listener.onTaskAddedToSyncQueue();*//*
                         }
                     });
                 }
-            });
+            });*/
+        }
+    }
+
+    private void addTaskToLocalDB(@NonNull Task task, TaskEntryListener listener) {
+        saveTaskInDB(task);
+        if (listener != null) {
+            new Handler(Looper.getMainLooper())
+                    .post(listener::onTaskAddedToSyncQueue);
         }
     }
 
