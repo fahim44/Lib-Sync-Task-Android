@@ -47,7 +47,12 @@ public class AddTask {
                                 listener.onTaskDone(response, taskCompleted -> {
                                     //task is not successful, save it to local db & update listener
                                     if (!taskCompleted) {
-                                        listener.onTaskAddedToSyncQueue();
+                                        addTaskToLocalDB(task, listener);
+                                    }
+                                    //task is successful, update listener
+                                    else {
+                                        new Handler(Looper.getMainLooper())
+                                                .post(listener::onTaskComplete);
                                     }
                                 });
                             }

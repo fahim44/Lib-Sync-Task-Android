@@ -35,6 +35,11 @@ public class SyncTaskLib {
 
     private Context context;
 
+    /**
+     * init db, it should be called before any <b>AddTask</b> or <b>SyncTask</b> operation
+     * @param applicationContext Android context to init db and check network access
+     * @param packageName to create unique db name
+     */
     public void initiate(Context applicationContext, String packageName) {
         context = applicationContext.getApplicationContext();
         TaskDatabase database = Room.databaseBuilder(applicationContext.getApplicationContext(),
@@ -44,6 +49,10 @@ public class SyncTaskLib {
         taskDao = database.taskDao();
     }
 
+    /**
+     * check if device is connected to any network
+     * @return
+     */
     boolean isNetworkConnected() {
         if (context != null) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -55,12 +64,16 @@ public class SyncTaskLib {
         return false;
     }
 
+    /**
+     * check if the connected network has internet access,
+     * should not be run on UI/Main thread, it will cause the exception to be called
+     * @return
+     */
     @WorkerThread
     boolean isInternetAvailable() {
         try {
             InetAddress ipAddr = InetAddress.getByName("google.com");
-            //You can replace it with your name
-            return !ipAddr.equals("");
+            return !ipAddr.equals(""); //FIXME: replace "" with something meaningful
 
         } catch (Exception e) {
             return false;
