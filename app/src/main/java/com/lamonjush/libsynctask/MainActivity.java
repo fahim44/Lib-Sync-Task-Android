@@ -1,39 +1,125 @@
 package com.lamonjush.libsynctask;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lamonjush.libsynctask.callback.TaskCompleteCallBack;
 import com.lamonjush.libsynctask.callback.TaskEntryListener;
+import com.lamonjush.libsynctask.callback.TaskSyncListener;
 import com.lamonjush.libsynctask.model.InvocationMethod;
 import com.lamonjush.libsynctask.model.Task;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity {
+
+    @BindView(R.id.logTextView)
+    TextView logTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*new AddTask(new Task().setUrl("uRl").setInvocationMethod(InvocationMethod.POST),
-                new TaskEntryListener() {
-                    @Override
-                    public void onTaskDone(String response, TaskCompleteCallBack callBack) {
-                        Log.d("AddTask", "onTaskDone");
-                        callBack.isTaskCompleted(true);
-                    }
+        ButterKnife.bind(this);
+        logTextView.setText("");
+    }
 
-                    @Override
-                    public void onTaskAddedToSyncQueue() {
-                        Log.d("AddTask", "task added to sync queue");
-                        //AddTask.readTask();
-                    }
+    private void setLog(String text) {
+        logTextView.setText(logTextView.getText().toString()
+                + "\n"
+                + text);
+    }
 
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d("AddTask", e.getMessage());
-                    }
-                });*/
+    @OnClick(R.id.successButton)
+    void successButtonClick() {
+        Task task = new Task()
+                .setUrl("https://jsonplaceholder.typicode.com/posts/1")
+                .setInvocationMethod(InvocationMethod.GET);
+        new AddTask(task, new TaskEntryListener() {
+            @Override
+            public void onTaskDone(String response, TaskCompleteCallBack callBack) {
+                setLog("onTaskDone--> " + response);
+                callBack.isTaskCompleted(true);
+            }
+
+            @Override
+            public void onTaskAddedToSyncQueue() {
+                setLog("onTaskAddedToSyncQueue-->");
+            }
+
+            @Override
+            public void onTaskComplete() {
+                setLog("onTaskComplete-->");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                setLog("onError--> " + e.getMessage());
+            }
+        });
+    }
+
+    @OnClick(R.id.failedButton)
+    void failedButtonClick() {
+        Task task = new Task()
+                .setUrl("https://jsonplaceholder.typicode.com/posts/2")
+                .setInvocationMethod(InvocationMethod.GET);
+        new AddTask(task, new TaskEntryListener() {
+            @Override
+            public void onTaskDone(String response, TaskCompleteCallBack callBack) {
+                setLog("onTaskDone--> " + response);
+                callBack.isTaskCompleted(false);
+            }
+
+            @Override
+            public void onTaskAddedToSyncQueue() {
+                setLog("onTaskAddedToSyncQueue-->");
+            }
+
+            @Override
+            public void onTaskComplete() {
+                setLog("onTaskComplete-->");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                setLog("onError--> " + e.getMessage());
+            }
+        });
+    }
+
+    @OnClick(R.id.syncButton)
+    void syncButtonClick() {
+        new SyncTask(false, new TaskSyncListener() {
+            @Override
+            public void onTaskDone(Task task, String response, TaskCompleteCallBack callBack) {
+                setLog("onTaskDone--> " + response);
+                callBack.isTaskCompleted(true);
+            }
+
+            @Override
+            public void onTaskRemovedFromSyncQueue(Task task) {
+                setLog("onTaskRemovedFromSyncQueue--> " + task.getUrl());
+            }
+
+            @Override
+            public void onTaskFailed(Task task) {
+                setLog("onTaskFailed--> " + task.getUrl());
+            }
+
+            @Override
+            public void onComplete(int totalTaskCount, int completedTaskCount) {
+                setLog("onComplete--> totalTaskCount: " + totalTaskCount + " completedTaskCount: " + completedTaskCount);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                setLog("onError--> " + e.getMessage());
+            }
+        });
     }
 }
