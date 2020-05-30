@@ -7,6 +7,8 @@ It's a simple helper sync library for Android.
 If your application make server requests and if any disaster happens (ex: no internet/ response failed),
 you want to save the request in queue so that you can retry the requests (sync with the server) later time.... This library can help you out.
 
+This library has used `Room` as db-wrapper, `Jackson` for json perser, `okhttp` for network calling
+
 ## setup:
 
 Add it in your root build.gradle at the end of repositories:
