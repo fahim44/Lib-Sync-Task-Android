@@ -21,13 +21,14 @@ public class Task {
 
     private List<RequestHeader> headers;
 
-    public void setRequestBody(Object obj) {
+    public Task setRequestBody(Object obj) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             requestBody = mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public Task addHeader(String key, String value) {
@@ -68,19 +69,19 @@ public class Task {
         return requestBody;
     }
 
-    public Task setRequestBody(String requestBody) {
+    /*public Task setRequestBody(String requestBody) {
         this.requestBody = requestBody;
         return this;
-    }
+    }*/
 
     public List<RequestHeader> getHeaders() {
         return headers;
     }
 
-    public Task setHeaders(List<RequestHeader> headers) {
+    /*public Task setHeaders(List<RequestHeader> headers) {
         this.headers = headers;
         return this;
-    }
+    }*/
 
     @JsonIgnore
     public TaskEntity getTaskEntity() {

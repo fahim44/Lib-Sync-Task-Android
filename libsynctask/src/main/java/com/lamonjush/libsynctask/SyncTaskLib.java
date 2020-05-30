@@ -40,11 +40,11 @@ public class SyncTaskLib {
      * @param applicationContext Android context to init db and check network access
      * @param packageName to create unique db name
      */
-    public void initiate(Context applicationContext, String packageName) {
+    public void initiate(Context applicationContext) {
         context = applicationContext.getApplicationContext();
         TaskDatabase database = Room.databaseBuilder(applicationContext.getApplicationContext(),
                 TaskDatabase.class,
-                packageName + SyncTaskLib.class.getName())
+                applicationContext.getApplicationContext().getPackageName() + SyncTaskLib.class.getName())
                 .build();
         taskDao = database.taskDao();
     }

@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     void successButtonClick() {
         Task task = new Task()
                 .setUrl("https://jsonplaceholder.typicode.com/posts/1")
+                .addHeader("Content-Type","application/json")
+                .setRequestBody(new Object())
                 .setInvocationMethod(InvocationMethod.GET);
         new AddTask(task, new TaskEntryListener() {
             @Override
