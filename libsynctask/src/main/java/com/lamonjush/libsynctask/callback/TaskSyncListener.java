@@ -2,14 +2,14 @@ package com.lamonjush.libsynctask.callback;
 
 import com.lamonjush.libsynctask.model.Task;
 
-public interface TaskSyncListener {
+public interface TaskSyncListener extends TaskListener{
 
     /**
      * call when server call successful, ask user whatever the response is valid,
      * if response valid, remove from the db and call <b>onTaskRemovedFromSyncQueue</b>
      * if response invalid, call <b>onTaskFailed</b>
      * <p>
-     * if user set <b>SyncTask.stopOnSingleTaskFailure = true;</b> and response invalid, call <b>onComplete</b>
+     * if user set <b>SyncTask.stopOnAnyTaskFailure = true;</b> and response invalid, call <b>onComplete</b>
      **/
     void onTaskDone(Task task, String response, TaskCompleteCallBack callBack);
 
@@ -35,13 +35,4 @@ public interface TaskSyncListener {
      * @param completedTaskCount completed task count
      */
     void onComplete(int totalTaskCount, int completedTaskCount);
-
-    /**
-     * sync cannot be done, the reason might be->
-     * not internet access
-     * <b>SyncTaskLib</b> not initialize
-     *
-     * @param e the reason
-     */
-    void onError(Exception e);
 }

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 public class TaskEntity {
 
     @PrimaryKey
-    public int id;
+    public long id;
 
     public String url;
 

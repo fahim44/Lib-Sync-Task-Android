@@ -1,13 +1,18 @@
 package com.lamonjush.libsynctask;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
+import com.lamonjush.libsynctask.callback.TaskListener;
+import com.lamonjush.libsynctask.db.entity.TaskEntity;
 import com.lamonjush.libsynctask.model.RequestHeader;
 import com.lamonjush.libsynctask.model.Task;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -73,7 +78,40 @@ public class Helper {
         return RequestBody.create(body, JSON);
     }
 
+    @WorkerThread
     static void saveTaskInDB(@NonNull Task task) {
         SyncTaskLib.taskDao.insert(task.getTaskEntity());
+    }
+
+    @WorkerThread
+    static List<Task> getTasksFromDB() {
+        List<TaskEntity> entities = SyncTaskLib.taskDao.getAll();
+        if (entities == null) {
+            return new ArrayList<>();
+        }
+        List<Task> tasks = new ArrayList<>();
+        for (TaskEntity entity : entities) {
+            tasks.add(Task.fromTaskEntity(entity));
+        }
+        return tasks;
+    }
+
+    @WorkerThread
+    static void deleteTaskFromDB(@NonNull Task task) {
+        SyncTaskLib.taskDao.delete(task.getTaskEntity());
+    }
+
+    /**
+     * check whatever {@link SyncTaskLib}'s init is called and db is setup or not
+     * if not setup done, call listener.onError
+     */
+    static boolean checkInitState(TaskListener listener) {
+        if (SyncTaskLib.taskDao == null) {
+            if (listener != null) {
+                listener.onError(new Exception("Sync Task not initialized"));
+            }
+            return false;
+        }
+        return true;
     }
 }

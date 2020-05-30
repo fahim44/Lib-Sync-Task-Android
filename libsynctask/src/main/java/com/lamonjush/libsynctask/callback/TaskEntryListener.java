@@ -1,6 +1,6 @@
 package com.lamonjush.libsynctask.callback;
 
-public interface TaskEntryListener {
+public interface TaskEntryListener extends TaskListener{
 
     /**
      * call when server call successful, ask user whatever the response is valid,
@@ -20,14 +20,4 @@ public interface TaskEntryListener {
      * server response is valid and task completed successfully.
      */
     void onTaskComplete();
-
-    /**
-     * task completing cannot be done, the reason might be->
-     * not internet access
-     * <b>SyncTaskLib</b> not initialize
-     * task url, invocationMethod are invalid
-     *
-     * @param e the reason
-     */
-    void onError(Exception e);
 }

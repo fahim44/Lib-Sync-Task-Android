@@ -15,7 +15,7 @@ public class AddTask {
 
     public AddTask(@NonNull Task task, TaskEntryListener listener) {
         //check lib init and task validation
-        if (checkInitState(listener)
+        if (Helper.checkInitState(listener)
                 && isTaskValid(task, listener)) {
 
             ExecutorService service = Executors.newSingleThreadExecutor();
@@ -44,17 +44,19 @@ public class AddTask {
                         else {
                             //ask user for task successful verification
                             if (listener != null) {
-                                listener.onTaskDone(response, taskCompleted -> {
-                                    //task is not successful, save it to local db & update listener
-                                    if (!taskCompleted) {
-                                        addTaskToLocalDB(task, listener);
-                                    }
-                                    //task is successful, update listener
-                                    else {
-                                        new Handler(Looper.getMainLooper())
-                                                .post(listener::onTaskComplete);
-                                    }
-                                });
+                                new Handler(Looper.getMainLooper()).post(() ->
+                                        listener.onTaskDone(response, taskCompleted ->
+                                                service.submit(() -> {
+                                                    //task is not successful, save it to local db & update listener
+                                                    if (!taskCompleted) {
+                                                        addTaskToLocalDB(task, listener);
+                                                    }
+                                                    //task is successful, update listener
+                                                    else {
+                                                        new Handler(Looper.getMainLooper())
+                                                                .post(listener::onTaskComplete);
+                                                    }
+                                                })));
                             }
                         }
                     }
@@ -69,16 +71,6 @@ public class AddTask {
             new Handler(Looper.getMainLooper())
                     .post(listener::onTaskAddedToSyncQueue);
         }
-    }
-
-    private boolean checkInitState(TaskEntryListener listener) {
-        if (SyncTaskLib.taskDao == null) {
-            if (listener != null) {
-                listener.onError(new Exception("Sync Task not initialized"));
-            }
-            return false;
-        }
-        return true;
     }
 
     private boolean isTaskValid(@NonNull Task task, TaskEntryListener listener) {
