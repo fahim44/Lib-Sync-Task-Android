@@ -12,7 +12,7 @@ This library has used `Room` as db-wrapper, `Jackson` for json perser, `okhttp` 
 ## setup:
 
 Add it in your root build.gradle at the end of repositories:
-```
+```gradle
 allprojects {
  repositories {
   maven { url 'https://jitpack.io' }
@@ -20,7 +20,7 @@ allprojects {
 }
 ```
 Add the dependency in your module's build.gradle
-```
+```gradle
 dependencies {
  implementation 'com.github.fahim44:Lib-Sync-Task-Android:VERSION'
 }
@@ -32,7 +32,7 @@ dependencies {
 
 Initiate the lib in your `Application` class
 
-```
+```java
 public class App extends Application {
     @Override
     public void onCreate() {
@@ -43,7 +43,7 @@ public class App extends Application {
 ```
 ### Add new server request (Task)
 First add a task with your data
-```
+```java
 Task task = new Task()
                 .setUrl("https://jsonplaceholder.typicode.com/posts/1")
                 .addHeader("Content-Type","application/json")
@@ -52,7 +52,7 @@ Task task = new Task()
  ```
 
 then create an AddTask obj, which will try to execute the request, if it fails, it will save the request in the queue
-```
+```java
 new AddTask(task, new TaskEntryListener() {
             @Override
             public void onTaskDone(String response, TaskCompleteCallBack callBack) {
@@ -83,7 +83,7 @@ new AddTask(task, new TaskEntryListener() {
 
 ### Sync previously failed server requests
 make a SyncTask object to complete the sync
-```
+```java
 //If you want to stop the syncing when any task failed, create 'SyncTask' with firstParam= 'true'
 //If you want to continue syncing when any task failed, create 'SyncTask' with firstParam= 'false'
 new SyncTask(false, new TaskSyncListener() {
